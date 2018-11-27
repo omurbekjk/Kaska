@@ -6,6 +6,16 @@
 3. Download `google-services.json` and add it to inside `app` folder
 4. Run the app
 
+In ElasticSearch we have two indicies: posts, users.
+
+In CloudFunction we have functions:
+getPostListByTag = for search;
+getPostListByUserId = for profile ...;
+getUserByUid;
+getUserList = get all users;
+
+Also cloudFunction are trigging CRUD operations from realTimeDatabase;
+
 ### Endpoint for get UserList and PostList
 Post Method.
 For get UserList you should send query(search will be carried out in the 'username,name,bio,email') to 'https://us-central1-kgkaska.cloudfunctions.net/getUserList'.
