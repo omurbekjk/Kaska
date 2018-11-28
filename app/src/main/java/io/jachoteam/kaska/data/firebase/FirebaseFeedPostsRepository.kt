@@ -13,6 +13,11 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 
 class FirebaseFeedPostsRepository : FeedPostsRepository {
+    override fun getUsersFeedPosts(uid: String, userId: String): LiveData<List<FeedPost>> =
+            FirebaseLiveData(database.child("feed-posts").child(uid).ref.orderByChild("uid").equalTo(userId)).map {
+                it.children.map { it.asFeedPost()!! }
+            }
+
     override fun createFeedPost(uid: String, feedPost: FeedPost): Task<Unit> {
         val reference = database.child("feed-posts").child(uid).push()
         return reference.setValue(feedPost).toUnit().addOnSuccessListener {

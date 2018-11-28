@@ -18,6 +18,7 @@ class SearchActivity : BaseActivity(), TextWatcher {
     private lateinit var mAdapter: ImagesAdapter
     private lateinit var mViewModel: SearchViewModel
     private var isSearchEntered = false
+    private var isSearchByPostTag = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +42,10 @@ class SearchActivity : BaseActivity(), TextWatcher {
     }
 
     override fun afterTextChanged(s: Editable?) {
+        Log.d("COMPUTED_MESSAGE", s.toString())
+
         if (!isSearchEntered) {
+            Log.d("IN_IF", isSearchEntered.toString())
             isSearchEntered = true
             Handler().postDelayed({
                 isSearchEntered = false

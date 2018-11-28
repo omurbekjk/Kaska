@@ -1,5 +1,6 @@
 package io.jachoteam.kaska;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,11 +22,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.jachoteam.kaska.dummy.DummyContent;
 import io.jachoteam.kaska.models.User;
+import io.jachoteam.kaska.screens.common.BaseActivity;
 import io.jachoteam.kaska.screens.common.GlideApp;
 
-public class ProfileViewActivity extends AppCompatActivity implements TabFragment.OnListFragmentInteractionListener,
+public class ProfileViewActivity extends BaseActivity implements TabFragment.OnListFragmentInteractionListener,
         Tab2Fragment.OnFragmentInteractionListener, Tab3Fragment.OnFragmentInteractionListener {
-    public String uid;
+    static public String uid;
     public String username;
     public TextView followersCountTextView;
     public TextView followingCountTextView;
@@ -105,6 +107,7 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
 
             }
         });
+
 
     }
 

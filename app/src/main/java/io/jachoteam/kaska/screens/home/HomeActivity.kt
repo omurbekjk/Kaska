@@ -25,7 +25,9 @@ class HomeActivity : BaseActivity(), FeedAdapter.Listener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         Log.d(TAG, "onCreate")
-        userUid = FirebaseAuth.getInstance().currentUser!!.uid
+        if ( FirebaseAuth.getInstance().currentUser != null){
+            userUid = FirebaseAuth.getInstance().currentUser!!.uid
+        }
 
         mAdapter = FeedAdapter(this, this@HomeActivity)
         feed_recycler.adapter = mAdapter

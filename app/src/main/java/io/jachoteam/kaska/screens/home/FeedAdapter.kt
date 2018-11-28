@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.view.ViewPager
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +43,7 @@ class FeedAdapter(private val listener: Listener,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Log.d("FeedAdapter","onBindViewHolder(): " + posts[position])
         val post = posts[position]
         val likes = postLikes[position] ?: defaultPostLikes
         with(holder.view) {
@@ -73,6 +75,7 @@ class FeedAdapter(private val listener: Listener,
         val diffResult = DiffUtil.calculateDiff(SimpleCallback(this.posts, newPosts) { it.id })
         this.posts = newPosts
         diffResult.dispatchUpdatesTo(this)
+        Log.d("FeedAdapter","updatePosts")
     }
 
     private fun init(imagesMap: Map <String, Image>,sliderPager: ViewPager){
