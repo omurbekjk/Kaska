@@ -101,7 +101,7 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
         adapter = new RVFeedAdapter(getContext());
         recyclerView.setAdapter(adapter);
         updateUserDetails();
-        
+
         return view;
     }
 
