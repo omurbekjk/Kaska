@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import io.jachoteam.kaska.dummy.DummyContent;
+import io.jachoteam.kaska.helpers.Shared;
 import io.jachoteam.kaska.models.User;
 import io.jachoteam.kaska.screens.common.GlideApp;
 
@@ -42,7 +45,10 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
         setContentView(R.layout.activity_profile_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        Log.e("Profile","dsdfd");
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
+        Shared.Uid = currentFirebaseUser.getUid();
+        Log.e("CurrentUser",currentFirebaseUser.getUid());
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");
         username = intent.getStringExtra("username");
@@ -85,7 +91,7 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),uid);
         viewPager.setAdapter(adapter);
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
@@ -143,6 +149,8 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
                 long count = dataSnapshot.getChildrenCount();
                 TextView postsCount = (TextView) findViewById(R.id.posts_count_text);
                 postsCount.setText(count + "");
+
+
             }
 
             @Override
