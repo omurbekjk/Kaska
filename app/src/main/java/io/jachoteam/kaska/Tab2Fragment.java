@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.loopj.android.http.RequestParams;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 
 import io.jachoteam.kaska.adapter.ProfileGridAdapter;
 import io.jachoteam.kaska.adapter.RVFeedAdapter;
+import io.jachoteam.kaska.helpers.ElasticRestClient;
 import io.jachoteam.kaska.models.FeedPost;
 import io.jachoteam.kaska.models.Post;
 import io.jachoteam.kaska.screens.home.FeedAdapter;
@@ -72,6 +74,7 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
         // Required empty public constructor
     }
 
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -95,8 +98,12 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
-        getCategory();
+        //getCategory();
 
+        RequestParams params = new RequestParams();
+        params.put("params","для");
+
+        ElasticRestClient.postJ("getPostListByTag",params);
 
         adapter = new RVFeedAdapter(getContext());
         recyclerView.setAdapter(adapter);
@@ -115,12 +122,12 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
+     /*   if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-        }
+        }*/
     }
 
     @Override

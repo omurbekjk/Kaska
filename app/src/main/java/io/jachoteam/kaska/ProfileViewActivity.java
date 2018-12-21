@@ -90,6 +90,7 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
         tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
+
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),uid);
         viewPager.setAdapter(adapter);
