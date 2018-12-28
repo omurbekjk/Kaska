@@ -3,11 +3,16 @@ package io.jachoteam.kaska.screens.profile
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
+import android.view.View
 import io.jachoteam.kaska.FollowersListActivity
 import io.jachoteam.kaska.FollowingsListActivity
+import io.jachoteam.kaska.PagerAdapter
 import io.jachoteam.kaska.R
+import io.jachoteam.kaska.helpers.Shared
 import io.jachoteam.kaska.screens.addfriends.AddFriendsActivity
 import io.jachoteam.kaska.screens.common.*
 import io.jachoteam.kaska.screens.editprofile.EditProfileActivity
@@ -20,7 +25,7 @@ class ProfileActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-        Log.d(TAG, "onCreate")
+        Log.e(TAG, "onCreate")
 
         edit_profile_btn.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
@@ -34,9 +39,17 @@ class ProfileActivity : BaseActivity() {
             val intent = Intent(this, AddFriendsActivity::class.java)
             startActivity(intent)
         }
-        images_recycler.layoutManager = GridLayoutManager(this, 3)
-        mAdapter = ImagesAdapter()
-        images_recycler.adapter = mAdapter
+        val tabLayout = findViewById<View>(R.id.tablayout) as TabLayout
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"))
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"))
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"))
+        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
+        val viewPager = findViewById<View>(R.id.pager) as ViewPager
+        Log.e("USI",Shared.Uid)
+        val adapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount, Shared.Uid)
+        viewPager.adapter = adapter
+
+        tabLayout.setupWithViewPager(viewPager)
 
         setupAuthGuard { uid ->
             setupBottomNavigation(uid,4)
@@ -65,7 +78,6 @@ class ProfileActivity : BaseActivity() {
             })
             viewModel.images.observe(this, Observer {
                 it?.let { images ->
-                    mAdapter.updateImages(images)
                     posts_count_text.text = images.size.toString()
                 }
             })

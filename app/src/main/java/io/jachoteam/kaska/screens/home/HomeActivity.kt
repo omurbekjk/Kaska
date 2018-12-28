@@ -11,6 +11,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import io.jachoteam.kaska.ProfileViewActivity
 import io.jachoteam.kaska.R
+import io.jachoteam.kaska.helpers.Shared
 import io.jachoteam.kaska.screens.comments.CommentsActivity
 import io.jachoteam.kaska.screens.common.BaseActivity
 import io.jachoteam.kaska.screens.common.setupAuthGuard
@@ -44,7 +45,9 @@ class HomeActivity : BaseActivity(), FeedAdapter.Listener {
             mViewModel.init(uid)
             mViewModel.feedPosts.observe(this, Observer {
                 it?.let {
+                    Log.e("ddf","df"+ it[0].id)
                     mAdapter.updatePosts(it)
+
                 }
             })
             mViewModel.goToCommentsScreen.observe(this, Observer {
