@@ -26,7 +26,7 @@
 In Elastic we search users by ['username','name','bio','email']
 
 REQUEST EXAMPLE:
-URL FOR POST REQUEST: "https://us-central1-fir-elastic-ab0bd.cloudfunctions.net/getUserList"
+URL FOR POST REQUEST: "https://us-central1-kgkaska.cloudfunctions.net/getUserList"
 {
     "params": "username|name|bio|email"
 }
@@ -51,7 +51,7 @@ RESPONSE EXAMPLE:
 In Elastic we search posts by tag;
 
 REQUEST EXAMPLE:
-URL FOR POST REQUEST: "https://us-central1-fir-elastic-ab0bd.cloudfunctions.net/getPostListByTag"
+URL FOR POST REQUEST: "https://us-central1-kgkaska.cloudfunctions.net/getPostListByTag"
 {
     "params": "tag1,tag2,tag3"
 }
@@ -77,7 +77,7 @@ RESPONSE EXAMPLE:
 To get user's all posts, we search posts by userId;
 
 REQUEST EXAMPLE:
-URL FOR POST REQUEST: "https://us-central1-fir-elastic-ab0bd.cloudfunctions.net/getPostListByUserid"
+URL FOR POST REQUEST: "https://us-central1-kgkaska.cloudfunctions.net/getPostListByUserid"
 {
     "params": "userUid"
 }
