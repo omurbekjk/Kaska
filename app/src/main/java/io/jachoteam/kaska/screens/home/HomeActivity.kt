@@ -33,7 +33,7 @@ class HomeActivity : BaseActivity(), FeedAdapter.Listener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         Log.d(TAG, "onCreate")
-//        userUid = FirebaseAuth.getInstance().currentUser!!.uid
+       Shared.Uid = FirebaseAuth.getInstance().currentUser!!.uid
 
         mAdapter = FeedAdapter(this,this@HomeActivity, defaultPostDetailsService)
         feed_recycler.adapter = mAdapter

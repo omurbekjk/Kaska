@@ -20,10 +20,13 @@ import com.loopj.android.http.RequestParams;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.entity.StringEntity;
 import io.jachoteam.kaska.adapter.ProfileGridAdapter;
 import io.jachoteam.kaska.adapter.RVFeedAdapter;
 import io.jachoteam.kaska.helpers.ElasticRestClient;
@@ -100,10 +103,20 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
 
         //getCategory();
 
-        RequestParams params = new RequestParams();
-        params.put("params","для");
 
-        ElasticRestClient.postJ("getPostListByTag",params);
+      /*  JSONObject jsonParams = new JSONObject();
+        StringEntity entity = null;
+        try {
+            jsonParams.put("params", "B5MxZVqLduYOgZ25mg4IhNToPQj2");
+            entity = new StringEntity(jsonParams.toString());
+        } catch (JSONException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        ElasticRestClient.postJ("getPostListByUserid",entity,getContext());*/
+
+
+      getCategory();
 
         adapter = new RVFeedAdapter(getContext());
         recyclerView.setAdapter(adapter);
@@ -202,27 +215,35 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
         });
 
     }
-
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
     public void getCategory() {
 
         OkHttpClient client = new OkHttpClient();
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("params", "B5MxZVqLduYOgZ25mg4IhNToPQj2");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        RequestBody requestBody = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("params", "B5MxZVqLduYOgZ25mg4IhNToPQj2")
+//                .build();
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("param", "для")
-                .build();
+        RequestBody body = RequestBody.create(JSON, String.valueOf(jsonParams));
 
 
         final Request request = new Request.Builder()
-                .url("https://us-central1-fir-elastic-ab0bd.cloudfunctions.net/getPostListByTag")
+                .url("https://us-central1-fir-elastic-ab0bd.cloudfunctions.net/getPostListByUserid")
+                .addHeader("Content-Type"," /json")
 
-
-                .post(requestBody)
+                .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                Log.e("Fail",call.toString()+"   "+e.getMessage());
             }
 
             @Override
