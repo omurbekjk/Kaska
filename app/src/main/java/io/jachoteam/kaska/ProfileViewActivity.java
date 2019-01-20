@@ -47,8 +47,6 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
         setSupportActionBar(toolbar);
         Log.e("Profile","dsdfd");
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
-        Shared.Uid = currentFirebaseUser.getUid();
-        Log.e("CurrentUser",currentFirebaseUser.getUid());
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");
         username = intent.getStringExtra("username");

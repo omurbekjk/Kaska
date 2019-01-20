@@ -1,5 +1,6 @@
 package io.jachoteam.kaska.helpers;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -10,7 +11,11 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class ElasticRestClient {
 
@@ -23,8 +28,8 @@ public class ElasticRestClient {
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
-    public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.post(getAbsoluteUrl(url), params, responseHandler);
+    public static void post(String url, StringEntity params, AsyncHttpResponseHandler responseHandler,Context context) {
+        client.post(context ,getAbsoluteUrl(url), params,"application/json", responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
@@ -32,19 +37,26 @@ public class ElasticRestClient {
     }
 
 
-    public static void postJ (String url, RequestParams params){
-
+    public static void postJ (String url, StringEntity params,Context context){
+        client.addHeader("Content-Type","application/json");
         post(url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("DDD",responseBody.toString());
+                Log.e("Elastic",responseBody.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.e("DD",error.getMessage());
+                String value;
+                try {
+                   value = new String(responseBody, "UTF-8");
+                    Log.e("On Fail Elastic",value);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
-        });
+        },context);
 
     }
 
