@@ -1,0 +1,103 @@
+package io.jachoteam.kaska2.screens.home
+
+import android.content.Context
+import android.content.Intent
+import android.support.v4.view.PagerAdapter
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import io.jachoteam.kaska2.R
+import io.jachoteam.kaska2.helpers.Shared
+import io.jachoteam.kaska2.models.Image
+import io.jachoteam.kaska2.screens.common.GlideApp
+import io.jachoteam.kaska2.screens.postDetails.PostDetailActivity
+import io.jachoteam.kaska2.screens.postDetails.PostDetailsService
+
+class FeedSlidingImageAdapter(private var context: Context,
+                              private var images: List<Image>,
+                              private var postUserId: String,
+                              private var postId: String) : PagerAdapter() {
+
+    private var inflater: LayoutInflater = LayoutInflater.from(context)
+
+    private lateinit var imageView: ImageView
+    private lateinit var imageViewPrev: ImageView
+    private lateinit var imageViewNext: ImageView
+
+    override fun getCount(): Int {
+        return images.size
+    }
+
+    override fun isViewFromObject(view: View, `object`: Any): Boolean {
+        return view == `object`
+    }
+
+    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+        container.removeView(`object` as View?)
+    }
+
+    override fun instantiateItem(view: ViewGroup, position: Int): Any {
+        val imageLayout: View = inflater
+                .inflate(R.layout.feed_sliding_image, view, false)!!
+
+        Log.e("DDDSSS","hfg")
+        imageView = imageLayout.findViewById(R.id.feed_sliding_image)
+      /*  imageViewPrev = imageLayout.findViewById(R.id.feed_sliding_image_prev)
+        imageViewNext = imageLayout.findViewById(R.id.feed_sliding_image_next)
+*/
+        updateViews(position)
+
+        imageView.setOnClickListener {
+
+            var intent : Intent = Intent(context,PostDetailActivity::class.java);
+            intent.putExtra("postId", postId)
+            intent.putExtra("userId", postUserId)
+            context.startActivity(intent)
+            Log.d("Click: ", postId)
+        }
+      /*  imageViewPrev.setOnClickListener {
+            HomeActivity.mPager.currentItem = position - 1
+        }
+        imageViewNext.setOnClickListener {
+            HomeActivity.mPager.currentItem = position + 1
+        }*/
+
+        view.addView(imageLayout, 0)
+        return imageLayout
+    }
+
+    private fun updateViews(position: Int) {
+        GlideApp.with(context)
+                .load(images[position].url)
+                .centerCrop()
+                .apply (RequestOptions.bitmapTransform(RoundedCorners(80)))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(false)
+                .into(imageView)
+      /*  if (position > 0) {
+            GlideApp.with(context)
+                    .load(images[position - 1].url)
+                    .centerCrop()
+                    .apply (RequestOptions.bitmapTransform(RoundedCorners(20)))
+                    .override(120,120)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(false)
+                    .into(imageViewPrev)
+        }
+        if (position < images.size - 1) {
+            GlideApp.with(context)
+                    .load(images[position + 1].url)
+                    .centerCrop()
+                    .apply (RequestOptions.bitmapTransform(RoundedCorners(20)))
+                    .override(120,120)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(false)
+                    .into(imageViewNext)
+        }*/
+    }
+}

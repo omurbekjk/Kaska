@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.jachoteam.kaska.screens.common.KeyboardAwareScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<io.jachoteam.kaska2.screens.common.KeyboardAwareScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll_view"
@@ -9,7 +9,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="io.jachoteam.kaska.screens.login.LoginActivity">
+        tools:context="io.jachoteam.kaska2.screens.login.LoginActivity">
 
         <ImageView
             android:id="@+id/instagram_image"
@@ -59,4 +59,4 @@
 
     </android.support.constraint.ConstraintLayout>
 
-</io.jachoteam.kaska.screens.common.KeyboardAwareScrollView>
+</io.jachoteam.kaska2.screens.common.KeyboardAwareScrollView>
