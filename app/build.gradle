@@ -66,8 +66,8 @@ dependencies {
     implementation 'com.github.jrvansuita:PickImage:2.2.4'
     //    Compress post images
     implementation 'id.zelory:compressor:2.1.0'
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
-    compile 'com.loopj.android:android-async-http:1.4.9'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
     kapt 'com.github.bumptech.glide:compiler:4.7.1'
 }
 

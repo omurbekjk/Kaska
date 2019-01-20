@@ -68,6 +68,10 @@
         <!-- android:resource="@xml/file_paths" /> -->
         <!-- </provider> -->
 
+
+        <activity
+            android:name=".screens.postDetails.PostDetailActivity"></activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.com.vansuita.pickimage.provider"

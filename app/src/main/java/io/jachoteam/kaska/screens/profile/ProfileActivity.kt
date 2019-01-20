@@ -45,7 +45,7 @@ class ProfileActivity : BaseActivity() {
         tabLayout.addTab(tabLayout.newTab().setText("Tab 3"))
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
         val viewPager = findViewById<View>(R.id.pager) as ViewPager
-        Log.e("USI",Shared.Uid)
+//        Log.e("USI",Shared.Uid)
         val adapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount, Shared.Uid)
         viewPager.adapter = adapter
 
