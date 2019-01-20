@@ -3,6 +3,8 @@ package io.jachoteam.kaska;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -331,11 +333,13 @@ public class CreatePostActivity extends BaseActivity implements IPickResult {
         if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION && resultCode == RESULT_OK) {
             Log.i("audio", "recorded successfully");
             audioUri = Uri.fromFile(new File(audioFilePath));
+            recordAudioButton.setText("Audio recorded!!!");
         } else if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
             Place place = PlacePicker.getPlace(this, data);
             address = place.getAddress().toString();
             latitude = place.getLatLng().latitude;
             longitude = place.getLatLng().longitude;
+            pickLocationButton.setText(address);
             Log.i("PLACE_PICKED", address);
             Log.i("PLACE_PICKED", latitude + "");
             Log.i("PLACE_PICKED", longitude + "");

@@ -39,13 +39,13 @@ class ProfileActivity : BaseActivity() {
             val intent = Intent(this, AddFriendsActivity::class.java)
             startActivity(intent)
         }
-        val tabLayout = findViewById<View>(R.id.tablayout) as TabLayout
+        val tabLayout = findViewById<TabLayout>(R.id.tablayout) as TabLayout
         tabLayout.addTab(tabLayout.newTab().setText("Tab 1"))
         tabLayout.addTab(tabLayout.newTab().setText("Tab 2"))
         tabLayout.addTab(tabLayout.newTab().setText("Tab 3"))
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
         val viewPager = findViewById<View>(R.id.pager) as ViewPager
-//        Log.e("USI",Shared.Uid)
+        Log.i("USI",Shared.Uid)
         val adapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount, Shared.Uid)
         viewPager.adapter = adapter
 
