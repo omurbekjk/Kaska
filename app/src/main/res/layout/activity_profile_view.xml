@@ -132,19 +132,53 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <Button
-                android:layout_margin="10dp"
-                android:id="@+id/edit_profile_btn"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/button_bg"
-                android:minHeight="0dp"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                android:text="@string/edit_profile"
-                android:textAllCaps="false"
-                android:textSize="14sp" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/follow_btn"
+                    style="@style/small_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:minHeight="0dp"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/follow"
+                    android:textAllCaps="false"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/unfollow_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/button_bg"
+                    android:minHeight="0dp"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/unfollow"
+                    android:textAllCaps="false"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/send_message_btn"
+                    style="@style/small_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:minHeight="0dp"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/message"
+                    android:textAllCaps="false"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

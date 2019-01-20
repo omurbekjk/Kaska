@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -24,7 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.jachoteam.kaska.ProfileViewActivity;
 import io.jachoteam.kaska.R;
-import io.jachoteam.kaska.data.FeedPostLike;
 import io.jachoteam.kaska.helpers.Shared;
 import io.jachoteam.kaska.models.FeedPost;
 import io.jachoteam.kaska.models.Image;
@@ -41,8 +39,8 @@ import io.jachoteam.kaska.models.Likes;
 import io.jachoteam.kaska.models.Post;
 import io.jachoteam.kaska.screens.comments.CommentsActivity;
 import io.jachoteam.kaska.screens.common.GlideApp;
-import io.jachoteam.kaska.screens.home.FeedAdapter;
 import io.jachoteam.kaska.screens.home.FeedSlidingImageAdapter;
+import io.jachoteam.kaska.screens.profile.ProfileActivity;
 
 
 public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonViewHolder> {
@@ -219,7 +217,7 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
     }
 
     @Override
-    public void onBindViewHolder(PersonViewHolder holder, int i) {
+    public void onBindViewHolder(final PersonViewHolder holder, int i) {
 
         if (listVse.size() > 0) {
             vse = listVse.get(i);
@@ -238,6 +236,9 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
             holder.textAddress.setText(vse.getAddress());
             holder.textUsername.setText(vse.getUsername());
             holder.textCaption.setText(vse.getCaption());
+
+            holder.textUsername.setOnClickListener(new ProfileOpener(vse.getUid(), vse.getUsername()));
+            holder.imageUser.setOnClickListener(new ProfileOpener(vse.getUid(), vse.getUsername()));
 
             if (!vse.getAudioUrl().isEmpty()){
                 holder.imageAudio.setVisibility(View.VISIBLE);
@@ -336,5 +337,25 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
 
     }
 
+    public class ProfileOpener implements OnClickListener{
+        private String uid, username;
 
+        public ProfileOpener(String userId, String username){
+            this.uid = userId;
+            this.username = username;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent profileIntent = null;
+            if (Shared.Uid.equals(uid)) {
+                profileIntent = new Intent(context, ProfileActivity.class);
+            } else {
+                profileIntent = new Intent(context, ProfileViewActivity.class);
+            }
+            profileIntent.putExtra("uid", uid);
+            profileIntent.putExtra("username", username);
+            context.startActivity(profileIntent);
+        }
+    }
 }
