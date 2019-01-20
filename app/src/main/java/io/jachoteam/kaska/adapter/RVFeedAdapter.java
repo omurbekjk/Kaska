@@ -192,7 +192,7 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
         }
     }
 
-    ArrayList<Post> listVse;
+    List<Post> listVse;
     HashMap<Integer, Likes> likes = new HashMap<Integer, Likes>();
 
     public RVFeedAdapter(Context context) {
@@ -239,7 +239,7 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
             holder.textUsername.setText(vse.getUsername());
             holder.textCaption.setText(vse.getCaption());
 
-            if (vse.getAudioUrl().isEmpty()){
+            if (!vse.getAudioUrl().isEmpty()){
                 holder.imageAudio.setVisibility(View.VISIBLE);
                 holder.imageAudio.setImageResource(R.drawable.audio_icon);
             }else {
@@ -275,7 +275,7 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
 
     }
 
-    public void updatePosts(ArrayList<Post> posts) {
+    public void updatePosts(List<Post> posts) {
         listVse = posts;
         notifyDataSetChanged();
     }

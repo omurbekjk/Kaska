@@ -81,7 +81,7 @@ class PostDetailActivity : BaseActivity(), PostDetailsViewModel.Listener {
     }
 
     override fun openProfile(username: String, uid: String) {
-        Log.d(HomeActivity.TAG, "VIEW PROFILE: $username, $uid")
+//        Log.d(HomeActivity.TAG, "VIEW PROFILE: $username, $uid")
         val profileIntent = Intent(this, ProfileViewActivity::class.java)
         profileIntent.putExtra("uid", uid)
         profileIntent.putExtra("username", username)

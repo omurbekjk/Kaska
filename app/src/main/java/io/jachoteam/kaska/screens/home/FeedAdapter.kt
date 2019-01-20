@@ -155,8 +155,8 @@ class FeedAdapter(private val listener: Listener,
                     .into(imageViewNext)
         }
 
-        HomeActivity.mPager = sliderPager
-        HomeActivity.mPager.adapter = FeedSlidingImageAdapter(context, imagesList, postUserId, postId)
+//        HomeActivity.mPager = sliderPager
+//        HomeActivity.mPager.adapter = FeedSlidingImageAdapter(context, imagesList, postUserId, postId)
     }
 
 
