@@ -50,6 +50,7 @@ public class FollowersAdapter extends ArrayAdapter<User> {
 //        unfollowButton.setVisibility(View.GONE);
         name.setText(user.getUsername());
         nameText.setText(user.getName());
+        name.setOnClickListener(new ProfileOpener(getContext(),user.getUid(),user.getUsername()));
 
 //        unfollowButton.setOnClickListener(new View.OnClickListener() {
 //            @Override

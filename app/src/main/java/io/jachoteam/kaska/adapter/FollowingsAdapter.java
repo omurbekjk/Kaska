@@ -47,6 +47,7 @@ public class FollowingsAdapter extends ArrayAdapter<User> {
         followButton.setVisibility(View.GONE);
         unfollowButton.setVisibility(View.GONE);
         name.setText(user.getUsername());
+        name.setOnClickListener(new ProfileOpener(getContext(),user.getUid(),user.getUsername()));
         nameText.setText(user.getName());
 
         CircleImageView photo_image = (CircleImageView) listItem.findViewById(R.id.photo_image);

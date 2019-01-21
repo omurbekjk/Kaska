@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.jachoteam.kaska.ProfileViewActivity;
 import io.jachoteam.kaska.R;
 import io.jachoteam.kaska.helpers.Shared;
 import io.jachoteam.kaska.models.FeedPost;
@@ -40,7 +38,6 @@ import io.jachoteam.kaska.models.Post;
 import io.jachoteam.kaska.screens.comments.CommentsActivity;
 import io.jachoteam.kaska.screens.common.GlideApp;
 import io.jachoteam.kaska.screens.home.FeedSlidingImageAdapter;
-import io.jachoteam.kaska.screens.profile.ProfileActivity;
 
 
 public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonViewHolder> {
@@ -48,7 +45,182 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
     Post vse;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference postRef;
+    List<Post> listVse;
+    HashMap<Integer, Likes> likes = new HashMap<Integer, Likes>();
 
+    public RVFeedAdapter(Context context) {
+
+        this.context = context;
+
+    }
+
+    public void setImages(ImageView next, ImageView prev, int position, ArrayList<Image> images) {
+        Log.e("Pos", position + "");
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(20));
+        if (position > 0) {
+            prev.setVisibility(View.VISIBLE);
+            GlideApp.with(context)
+                    .load(images.get(position - 1).getUrl())
+                    .centerCrop()
+                    .apply(requestOptions)
+                    .override(120, 120)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(false)
+                    .into(prev);
+        } else {
+            prev.setVisibility(View.GONE);
+        }
+        if (position < images.size() - 1) {
+            next.setVisibility(View.VISIBLE);
+            GlideApp.with(context)
+                    .load(images.get(position + 1).getUrl())
+                    .centerCrop()
+                    .apply(requestOptions)
+                    .override(120, 120)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(false)
+                    .into(next);
+        } else {
+            next.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public PersonViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = null;
+        try {
+            v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.feed_item, viewGroup, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        PersonViewHolder pvh = new PersonViewHolder(v);
+        return pvh;
+    }
+
+    @Override
+    public void onBindViewHolder(final PersonViewHolder holder, int i) {
+
+        if (listVse.size() > 0) {
+            vse = listVse.get(i);
+            Likes like = likes.get(i);
+
+            List<Image> im = new ArrayList<>(vse.getImages().values());
+
+            FeedSlidingImageAdapter adapter = new FeedSlidingImageAdapter(context, im, vse.getUid(), vse.getId());
+            holder.viewPager.setAdapter(adapter);
+
+            setImages(holder.imageNext, holder.imagePrev, holder.viewPager.getCurrentItem(), (ArrayList<Image>) im);
+            if (!vse.getImage().isEmpty()) {
+                GlideApp.with(context).load(vse.getImage()).into(holder.imageUser);
+            }
+
+            holder.textAddress.setText(vse.getAddress());
+            holder.textUsername.setText(vse.getUsername());
+            holder.textCaption.setText(vse.getCaption());
+
+            holder.textUsername.setOnClickListener(new ProfileOpener(context, vse.getUid(), vse.getUsername()));
+            holder.imageUser.setOnClickListener(new ProfileOpener(context, vse.getUid(), vse.getUsername()));
+
+            if (!vse.getAudioUrl().isEmpty()) {
+                holder.imageAudio.setVisibility(View.VISIBLE);
+                holder.imageAudio.setImageResource(R.drawable.audio_icon);
+            } else {
+                holder.imageAudio.setVisibility(View.GONE);
+
+            }
+
+            updateUserDetails(vse.getId(), i);
+            if (like != null) {
+                holder.textLike.setVisibility(View.VISIBLE);
+                holder.textLike.setText(like.getCount() + " like");
+                if (like.isYourLike()) {
+                    holder.imageLike.setImageResource(R.drawable.ic_likes_active);
+                } else {
+                    holder.imageLike.setImageResource(R.drawable.ic_likes_border);
+                }
+            } else {
+                holder.textLike.setVisibility(View.GONE);
+            }
+
+
+        }
+
+    }
+
+    public void initPagerAdapter(Map<String, Image> images, String id, String uid, ViewPager viewPager) {
+
+        List<Image> im = new ArrayList<>(images.values());
+
+        FeedSlidingImageAdapter adapter = new FeedSlidingImageAdapter(context, im, uid, id);
+
+
+    }
+
+    public void updatePosts(List<Post> posts) {
+        listVse = posts;
+        notifyDataSetChanged();
+    }
+
+    public void updateLikes(Likes like, int pos) {
+
+        Likes k = likes.get(pos);
+
+        if (k != null) {
+            if (like.getCount() != k.getCount()) {
+                likes.put(pos, like);
+                notifyItemChanged(pos);
+            }
+        } else {
+            likes.put(pos, like);
+            notifyItemChanged(pos);
+        }
+
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return listVse == null ? 0 : listVse.size();
+    }
+
+    private void updateUserDetails(final String postid, final int position) {
+        postRef = database.getReference("likes/" + postid);
+        final ArrayList<FeedPost> feedPosts = new ArrayList<>();
+        postRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean bool = false;
+                ArrayList<String> keys = new ArrayList<>();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    Log.e("ddd", postSnapshot.toString() + "  " + position + " " + postid);
+                    if (Objects.equals(postSnapshot.getKey(), Shared.Uid)) {
+                        bool = true;
+                    }
+
+                    keys.add(postSnapshot.getKey());
+
+                }
+                if (dataSnapshot.getChildrenCount() > 0) {
+                    updateLikes(new Likes((int) dataSnapshot.getChildrenCount(), bool, keys), position);
+                    // Log.e("Size",feedPosts.size()+"");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+    }
 
     public class PersonViewHolder extends RecyclerView.ViewHolder {
 
@@ -78,22 +250,22 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
             imageLike.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                   Likes likes1 =  likes.get(getAdapterPosition());
-                   if (likes1!=null) {
-                       if (likes1.isYourLike()) {
-                           DatabaseReference ref = database.getReference("likes/" + listVse.get(getAdapterPosition()).getId());
-                           ref.child(Shared.Uid).removeValue();
-                       } else {
+                    Likes likes1 = likes.get(getAdapterPosition());
+                    if (likes1 != null) {
+                        if (likes1.isYourLike()) {
+                            DatabaseReference ref = database.getReference("likes/" + listVse.get(getAdapterPosition()).getId());
+                            ref.child(Shared.Uid).removeValue();
+                        } else {
 
-                           DatabaseReference ref = database.getReference("likes/" + listVse.get(getAdapterPosition()).getId());
-                           ref.child(Shared.Uid).setValue(true);
-                       }
-                   }else {
-                       DatabaseReference ref = database.getReference("likes/" + listVse.get(getAdapterPosition()).getId());
-                       ref.child(Shared.Uid).setValue(true);
-                   }
+                            DatabaseReference ref = database.getReference("likes/" + listVse.get(getAdapterPosition()).getId());
+                            ref.child(Shared.Uid).setValue(true);
+                        }
+                    } else {
+                        DatabaseReference ref = database.getReference("likes/" + listVse.get(getAdapterPosition()).getId());
+                        ref.child(Shared.Uid).setValue(true);
+                    }
 
-                   updateUserDetails(listVse.get(getAdapterPosition()).getId(),getAdapterPosition());
+                    updateUserDetails(listVse.get(getAdapterPosition()).getId(), getAdapterPosition());
 
                 }
             });
@@ -101,7 +273,7 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
             imageComment.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    context.startActivity(new Intent(context, CommentsActivity.class).putExtra("POST_ID",listVse.get(getAdapterPosition()).getId()));
+                    context.startActivity(new Intent(context, CommentsActivity.class).putExtra("POST_ID", listVse.get(getAdapterPosition()).getId()));
                 }
             });
 
@@ -110,13 +282,13 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
                 @Override
                 public void onClick(View view) {
 
-                    int pos = viewPager.getCurrentItem()-1;
+                    int pos = viewPager.getCurrentItem() - 1;
 
                     viewPager.setCurrentItem(pos);
 
                     ArrayList<Image> images = new ArrayList<>(listVse.get(getAdapterPosition()).getImages().values());
 
-                    setImages(imageNext,imagePrev,pos,images);
+                    setImages(imageNext, imagePrev, pos, images);
 
                 }
             });
@@ -125,13 +297,13 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
                 @Override
                 public void onClick(View view) {
 
-                    int pos = viewPager.getCurrentItem()+1;
+                    int pos = viewPager.getCurrentItem() + 1;
 
                     viewPager.setCurrentItem(pos);
 
                     ArrayList<Image> images = new ArrayList<>(listVse.get(getAdapterPosition()).getImages().values());
 
-                    setImages(imageNext,imagePrev,pos,images);
+                    setImages(imageNext, imagePrev, pos, images);
 
                 }
             });
@@ -145,7 +317,7 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
                 public void onPageSelected(int position) {
                     ArrayList<Image> images = new ArrayList<>(listVse.get(getAdapterPosition()).getImages().values());
 
-                    setImages(imageNext,imagePrev,position,images);
+                    setImages(imageNext, imagePrev, position, images);
                 }
 
                 @Override
@@ -158,204 +330,4 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
     }
 
 
-    public void setImages(ImageView next,ImageView prev,int position, ArrayList<Image> images){
-        Log.e("Pos",position+"");
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(20));
-        if (position > 0) {
-            prev.setVisibility(View.VISIBLE);
-            GlideApp.with(context)
-                    .load(images.get(position - 1).getUrl())
-                    .centerCrop()
-                    .apply(requestOptions)
-                    .override(120,120)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .skipMemoryCache(false)
-                    .into(prev);
-        }else {
-            prev.setVisibility(View.GONE);
-        }
-        if (position < images.size() - 1) {
-            next.setVisibility(View.VISIBLE);
-            GlideApp.with(context)
-                    .load(images.get(position + 1).getUrl())
-                    .centerCrop()
-                    .apply(requestOptions)
-                    .override(120,120)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .skipMemoryCache(false)
-                    .into(next);
-        }else {
-            next.setVisibility(View.GONE);
-        }
-    }
-
-    List<Post> listVse;
-    HashMap<Integer, Likes> likes = new HashMap<Integer, Likes>();
-
-    public RVFeedAdapter(Context context) {
-
-        this.context = context;
-
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
-
-    @Override
-    public PersonViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = null;
-        try {
-            v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.feed_item, viewGroup, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        PersonViewHolder pvh = new PersonViewHolder(v);
-        return pvh;
-    }
-
-    @Override
-    public void onBindViewHolder(final PersonViewHolder holder, int i) {
-
-        if (listVse.size() > 0) {
-            vse = listVse.get(i);
-            Likes like = likes.get(i);
-
-            List<Image> im = new ArrayList<>(vse.getImages().values());
-
-            FeedSlidingImageAdapter adapter = new FeedSlidingImageAdapter(context,im,vse.getUid(),vse.getId());
-            holder.viewPager.setAdapter(adapter);
-
-            setImages(holder.imageNext,holder.imagePrev,holder.viewPager.getCurrentItem(), (ArrayList<Image>) im);
-            if (!vse.getImage().isEmpty()) {
-                GlideApp.with(context).load(vse.getImage()).into(holder.imageUser);
-            }
-
-            holder.textAddress.setText(vse.getAddress());
-            holder.textUsername.setText(vse.getUsername());
-            holder.textCaption.setText(vse.getCaption());
-
-            holder.textUsername.setOnClickListener(new ProfileOpener(vse.getUid(), vse.getUsername()));
-            holder.imageUser.setOnClickListener(new ProfileOpener(vse.getUid(), vse.getUsername()));
-
-            if (!vse.getAudioUrl().isEmpty()){
-                holder.imageAudio.setVisibility(View.VISIBLE);
-                holder.imageAudio.setImageResource(R.drawable.audio_icon);
-            }else {
-                holder.imageAudio.setVisibility(View.GONE);
-
-            }
-
-            updateUserDetails(vse.getId(), i);
-            if (like != null) {
-                holder.textLike.setVisibility(View.VISIBLE);
-                holder.textLike.setText(like.getCount() + " like");
-                if (like.isYourLike()){
-                    holder.imageLike.setImageResource(R.drawable.ic_likes_active);
-                }else {
-                    holder.imageLike.setImageResource(R.drawable.ic_likes_border);
-                }
-            }else {
-                holder.textLike.setVisibility(View.GONE);
-            }
-
-
-        }
-
-    }
-
-
-    public void initPagerAdapter(Map<String, Image> images, String id, String uid, ViewPager viewPager){
-
-        List<Image> im = new ArrayList<>(images.values());
-
-        FeedSlidingImageAdapter adapter = new FeedSlidingImageAdapter(context,im,uid,id);
-
-
-    }
-
-    public void updatePosts(List<Post> posts) {
-        listVse = posts;
-        notifyDataSetChanged();
-    }
-
-    public void updateLikes(Likes like, int pos) {
-
-        Likes k = likes.get(pos);
-
-        if (k!=null){
-            if (like.getCount()!=k.getCount()){
-                likes.put(pos, like);
-                notifyItemChanged(pos);
-            }
-        }else {
-            likes.put(pos, like);
-            notifyItemChanged(pos);
-        }
-
-
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return listVse == null ? 0 : listVse.size();
-    }
-
-    private void updateUserDetails(final String postid, final int position) {
-        postRef = database.getReference("likes/" + postid);
-        final ArrayList<FeedPost> feedPosts = new ArrayList<>();
-        postRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean bool = false;
-                ArrayList<String> keys = new ArrayList<>();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-
-                    Log.e("ddd", postSnapshot.toString() + "  " + position + " " + postid);
-                    if (Objects.equals(postSnapshot.getKey(), Shared.Uid)) {
-                        bool = true;
-                    }
-
-                    keys.add(postSnapshot.getKey());
-
-                }
-                if (dataSnapshot.getChildrenCount() > 0) {
-                    updateLikes(new Likes((int) dataSnapshot.getChildrenCount(), bool,keys), position);
-                    // Log.e("Size",feedPosts.size()+"");
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-    }
-
-    public class ProfileOpener implements OnClickListener{
-        private String uid, username;
-
-        public ProfileOpener(String userId, String username){
-            this.uid = userId;
-            this.username = username;
-        }
-
-        @Override
-        public void onClick(View v) {
-            Intent profileIntent = null;
-            if (Shared.Uid.equals(uid)) {
-                profileIntent = new Intent(context, ProfileActivity.class);
-            } else {
-                profileIntent = new Intent(context, ProfileViewActivity.class);
-            }
-            profileIntent.putExtra("uid", uid);
-            profileIntent.putExtra("username", username);
-            context.startActivity(profileIntent);
-        }
-    }
 }

@@ -148,6 +148,7 @@
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:text="@string/follow"
+                    android:visibility="gone"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
 
@@ -162,6 +163,7 @@
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:text="@string/unfollow"
+                    android:visibility="gone"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
 

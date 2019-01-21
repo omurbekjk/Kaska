@@ -192,12 +192,11 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Post post = postSnapshot.getValue(Post.class);
                     post.setId(postSnapshot.getKey());
-                    Log.e("Get Data", post.getAddress());
+                    Log.i("Get Data", post.getAddress());
                     feedPosts.add(post);
 
-
                 }
-                Log.e("Size",feedPosts.size()+"");
+                Log.i("Size",feedPosts.size()+"");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

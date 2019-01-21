@@ -1,10 +1,12 @@
 package io.jachoteam.kaska.screens.comments
 
+import android.content.Intent
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.jachoteam.kaska.ProfileViewActivity
 import io.jachoteam.kaska.R
 import io.jachoteam.kaska.models.Comment
 import io.jachoteam.kaska.screens.common.SimpleCallback
@@ -18,8 +20,8 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
     private var comments = listOf<Comment>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-       val view = LayoutInflater.from(parent.context)
-               .inflate(R.layout.comments_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.comments_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -28,11 +30,17 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
         with(holder.view) {
             photo.loadUserPhoto(comment.photo)
             text.setCaptionText(comment.username, comment.text, comment.timestampDate())
+            text.setOnClickListener {
+                val intent = Intent(context, ProfileViewActivity::class.java)
+                intent.putExtra("uid", comment.uid)
+                intent.putExtra("username", comment.username)
+                context.startActivity(intent)
+            }
         }
     }
 
     fun updateComments(newComments: List<Comment>) {
-        val diffResult = DiffUtil.calculateDiff(SimpleCallback(comments, newComments) {it.id})
+        val diffResult = DiffUtil.calculateDiff(SimpleCallback(comments, newComments) { it.id })
         this.comments = newComments
         diffResult.dispatchUpdatesTo(this)
     }

@@ -201,11 +201,11 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
 
     public void displayFollowButton(){
         if(!user.getFollowers().containsKey(Shared.Uid)){
-            followBtn.setVisibility(View.VISIBLE);
+//            followBtn.setVisibility(View.VISIBLE);
             unfollowBtn.setVisibility(View.GONE);
         }else{
             followBtn.setVisibility(View.GONE);
-            unfollowBtn.setVisibility(View.VISIBLE);
+//            unfollowBtn.setVisibility(View.VISIBLE);
         }
         followBtn.setOnClickListener(new View.OnClickListener() {
             @Override

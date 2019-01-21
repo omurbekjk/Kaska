@@ -12,10 +12,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.jachoteam.kaska.adapter.FollowersAdapter;
 import io.jachoteam.kaska.adapter.FollowingsAdapter;
@@ -89,8 +91,10 @@ public class FollowingsListActivity extends AppCompatActivity {
                     singleFollowerRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            followers.add(dataSnapshot.getValue(User.class));
-                            moviesList.add(dataSnapshot.getValue(User.class));
+                            User user = dataSnapshot.getValue(User.class);
+                            user.setUid(dataSnapshot.getKey());
+                            followers.add(user);
+                            moviesList.add(user);
                             mAdapter = new FollowingsAdapter(getApplicationContext(), moviesList);
                             listView.setAdapter(mAdapter);
                             Log.i("FOLLOWER_USER", dataSnapshot.toString());

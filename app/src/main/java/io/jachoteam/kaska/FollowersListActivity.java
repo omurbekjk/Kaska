@@ -32,7 +32,6 @@ public class FollowersListActivity extends AppCompatActivity {
     DatabaseReference userRef;
     DatabaseReference singleFollowerRef;
     List<String> followersUid = new ArrayList<>();
-    List<User> followers = new ArrayList<>();
 
     private ListView listView;
     private FollowersAdapter mAdapter;
@@ -74,8 +73,9 @@ public class FollowersListActivity extends AppCompatActivity {
                     singleFollowerRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            followers.add(dataSnapshot.getValue(User.class));
-                            moviesList.add(dataSnapshot.getValue(User.class));
+                            User user = dataSnapshot.getValue(User.class);
+                            user.setUid(dataSnapshot.getKey());
+                            moviesList.add(user);
                             mAdapter = new FollowersAdapter(getApplicationContext(), moviesList);
                             listView.setAdapter(mAdapter);
                             Log.i("FOLLOWER_USER", dataSnapshot.toString());

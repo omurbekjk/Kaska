@@ -1,14 +1,17 @@
 package io.jachoteam.kaska.screens.notifications
 
+import android.content.Intent
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.jachoteam.kaska.ProfileViewActivity
 import io.jachoteam.kaska.R
 import io.jachoteam.kaska.models.Notification
 import io.jachoteam.kaska.models.NotificationType
 import io.jachoteam.kaska.screens.common.*
+import kotlinx.android.synthetic.main.comments_item.view.*
 import kotlinx.android.synthetic.main.notification_item.view.*
 
 class NotificationsAdapter : RecyclerView.Adapter<NotificationsAdapter.ViewHolder>() {
@@ -33,6 +36,12 @@ class NotificationsAdapter : RecyclerView.Adapter<NotificationsAdapter.ViewHolde
             }
             notification_text.setCaptionText(notification.username, notificationText,
                     notification.timestampDate())
+            notification_text.setOnClickListener {
+                val intent = Intent(context, ProfileViewActivity::class.java)
+                intent.putExtra("uid", notification.uid)
+                intent.putExtra("username", notification.username)
+                context.startActivity(intent)
+            }
             post_image.loadImageOrHide(notification.postImage)
         }
     }
