@@ -48,7 +48,7 @@ class PostDetailActivity : BaseActivity(), PostDetailsViewModel.Listener {
         tabLayout.setupWithViewPager(postDetailsViewPager)
 
         setupAuthGuard { uid ->
-            setupBottomNavigation(uid, 0)
+//            setupBottomNavigation(uid, 0)
             mViewModel = initViewModel()
             mViewModel.init(userId, postId, this)
             mViewModel.feedPost.observe(this, Observer {
