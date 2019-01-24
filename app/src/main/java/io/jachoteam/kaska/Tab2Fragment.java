@@ -11,40 +11,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.loopj.android.http.RequestParams;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.entity.StringEntity;
-import io.jachoteam.kaska.adapter.ProfileGridAdapter;
 import io.jachoteam.kaska.adapter.RVFeedAdapter;
-import io.jachoteam.kaska.helpers.ElasticRestClient;
-import io.jachoteam.kaska.models.FeedPost;
+import io.jachoteam.kaska.helpers.ElasticSearchApi;
+import io.jachoteam.kaska.helpers.ElasticSearchPostListener;
 import io.jachoteam.kaska.models.Post;
 import io.jachoteam.kaska.screens.home.FeedAdapter;
 import io.jachoteam.kaska.screens.home.HomeViewModel;
 import io.jachoteam.kaska.screens.postDetails.DefaultPostDetailsImpl;
 import io.jachoteam.kaska.screens.postDetails.PostDetailsService;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okio.BufferedSink;
 
 
 /**
@@ -94,36 +75,26 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
         View view = inflater.inflate(R.layout.fragment_tab2, container, false);
         Log.e("DDDDD","sadsd");
         uid = getArguments().getString("uid");
-        postRef = database.getReference("feed-posts/" + uid);
+       // postRef = database.getReference("feed-posts/" + uid);
 
         defaultPostDetailsService = new DefaultPostDetailsImpl(getActivity());
         recyclerView = view.findViewById(R.id.profile_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
-        //getCategory();
 
 
-      /*  JSONObject jsonParams = new JSONObject();
-        StringEntity entity = null;
-        try {
-            jsonParams.put("params", "B5MxZVqLduYOgZ25mg4IhNToPQj2");
-            entity = new StringEntity(jsonParams.toString());
-        } catch (JSONException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
 
-        ElasticRestClient.postJ("getPostListByUserid",entity,getContext());*/
-
-
-      getCategory();
 
         adapter = new RVFeedAdapter(getContext());
         recyclerView.setAdapter(adapter);
-        updateUserDetails();
+        //updateUserDetails();
+        getPost();
 
         return view;
     }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -135,12 +106,7 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-     /*   if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+
     }
 
     @Override
@@ -184,78 +150,25 @@ public class Tab2Fragment extends Fragment implements FeedAdapter.Listener{
         void onFragmentInteraction(Uri uri);
     }
 
-    private void updateUserDetails() {
-        final ArrayList<Post> feedPosts = new ArrayList<>();
-        postRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Post post = postSnapshot.getValue(Post.class);
-                    post.setId(postSnapshot.getKey());
-                    Log.i("Get Data", post.getAddress());
-                    feedPosts.add(post);
 
+    private void getPost() {
+
+        ElasticSearchPostListener listener = new ElasticSearchPostListener() {
+            @Override
+            public void onRequest(boolean isOk, final ArrayList<Post> posts) {
+                if (isOk) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.updatePosts(posts);
+                        }
+                    });
                 }
-                Log.i("Size",feedPosts.size()+"");
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.updatePosts(feedPosts);
-
-                    }
-                });
-
             }
+        };
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+        ElasticSearchApi.getPostByUserId(uid,listener);
 
-    }
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
-    public void getCategory() {
-
-        OkHttpClient client = new OkHttpClient();
-        JSONObject jsonParams = new JSONObject();
-        try {
-            jsonParams.put("params", "B5MxZVqLduYOgZ25mg4IhNToPQj2");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-//        RequestBody requestBody = new MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("params", "B5MxZVqLduYOgZ25mg4IhNToPQj2")
-//                .build();
-
-        RequestBody body = RequestBody.create(JSON, String.valueOf(jsonParams));
-
-
-        final Request request = new Request.Builder()
-                .url("https://us-central1-fir-elastic-ab0bd.cloudfunctions.net/getPostListByUserid")
-                .addHeader("Content-Type"," /json")
-
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("Fail",call.toString()+"   "+e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String json = response.body().string();
-                Log.e("RESPONSE_Finish",json);
-
-
-
-
-
-            }
-        });
     }
 
 }

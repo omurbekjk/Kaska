@@ -1,5 +1,7 @@
 package io.jachoteam.kaska.adapter;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ViewPager;
@@ -10,7 +12,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -30,6 +34,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.jachoteam.kaska.R;
+import io.jachoteam.kaska.helpers.PostHelper;
 import io.jachoteam.kaska.helpers.Shared;
 import io.jachoteam.kaska.models.FeedPost;
 import io.jachoteam.kaska.models.Image;
@@ -323,6 +328,13 @@ public class RVFeedAdapter extends RecyclerView.Adapter<RVFeedAdapter.PersonView
                 @Override
                 public void onPageScrollStateChanged(int state) {
 
+                }
+            });
+
+            imageMore.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PostHelper.postPopupMenuCaller(context,listVse.get(getAdapterPosition()).getId(), listVse.get(getAdapterPosition()).getUid());
                 }
             });
         }

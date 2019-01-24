@@ -11,6 +11,7 @@ import io.jachoteam.kaska.R
 import io.jachoteam.kaska.common.SingleLiveEvent
 import io.jachoteam.kaska.data.FeedPostsRepository
 import io.jachoteam.kaska.data.common.map
+import io.jachoteam.kaska.helpers.PostHelper
 import io.jachoteam.kaska.models.FeedPost
 import io.jachoteam.kaska.screens.common.BaseViewModel
 import io.jachoteam.kaska.screens.common.loadUserPhoto
@@ -46,6 +47,7 @@ class PostDetailsViewModel(onFailureListener: OnFailureListener,
     private lateinit var likeTextView: TextView
     private lateinit var captionTextView: TextView
     private lateinit var userAddressText: TextView
+    private lateinit var moreImageView: ImageView
 
 
     fun init(userId: String, postId: String, listener: Listener) {
@@ -95,6 +97,7 @@ class PostDetailsViewModel(onFailureListener: OnFailureListener,
         userNameTextView.setOnClickListener { listener.openProfile(post.username, post.uid) }
         userImageView.setOnClickListener { listener.openProfile(post.username, post.uid) }
         commentImageView.setOnClickListener{ listener.openComments()}
+        moreImageView.setOnClickListener{ PostHelper.postPopupMenuCaller(listener.getActivity(), postId,userId)}
     }
 
     private fun updatePostLikes(){
@@ -126,5 +129,6 @@ class PostDetailsViewModel(onFailureListener: OnFailureListener,
         likeTextView = listener.getActivity().findViewById(R.id.post_likes_text)
         captionTextView = listener.getActivity().findViewById(R.id.post_caption_text)
         userAddressText = listener.getActivity().findViewById(R.id.user_address_text)
+        moreImageView = listener.getActivity().findViewById(R.id.more_image)
     }
 }

@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v4.app.Fragment
 import android.util.Log
 import io.jachoteam.kaska.ProfileViewActivity
 import io.jachoteam.kaska.R
@@ -97,13 +98,21 @@ class PostDetailActivity : BaseActivity(), PostDetailsViewModel.Listener {
 
     private fun setupViewPager(viewPager: ViewPager) {
         val adapter = PostDetailsSectionPageAdapter(supportFragmentManager)
-        fragmentsMap.forEach { title, fragment ->
-            run {
-                if (fragment != null) {
-                    adapter.addFragment(fragment, title)
-                }
+
+        for(title: String in fragmentsMap.keys){
+            if(fragmentsMap[title] != null){
+                var fragment: Fragment = fragmentsMap[title] as Fragment
+                adapter.addFragment(fragment, title)
             }
         }
+//
+//        fragmentsMap.forEach { title, fragment ->
+//            run {
+//                if (fragment != null) {
+//                    adapter.addFragment(fragment, title)
+//                }
+//            }
+//        }
         viewPager.adapter = adapter
     }
 
@@ -125,11 +134,17 @@ class PostDetailActivity : BaseActivity(), PostDetailsViewModel.Listener {
 
     override fun onDestroy() {
         super.onDestroy()
-        fragmentsMap.forEach { _, fragment ->
-            run {
-                fragment.releaseMedia()
+
+        for(title: String in fragmentsMap.keys){
+            if(fragmentsMap[title] != null){
+                fragmentsMap[title]!!.releaseMedia()
             }
         }
+//        fragmentsMap.forEach { _, fragment ->
+//            run {
+//                fragment.releaseMedia()
+//            }
+//        }
     }
 
     inner class AsyncLoad(internal val post: FeedPost) : Runnable {

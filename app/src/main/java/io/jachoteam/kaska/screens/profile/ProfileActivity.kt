@@ -40,17 +40,29 @@ class ProfileActivity : BaseActivity() {
             startActivity(intent)
         }
         val tabLayout = findViewById<View>(R.id.tablayout) as TabLayout
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"))
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"))
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"))
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_likes_border))
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_home))
+//        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
+
         val viewPager = findViewById<View>(R.id.pager) as ViewPager
-//        Log.e("USI",Shared.Uid)
-        val adapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount, Shared.Uid)
+        val adapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount,Shared.Uid)
         viewPager.adapter = adapter
+        viewPager.setOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
 
-        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewPager.currentItem = tab.position
+            }
 
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+
+            }
+        })
         setupAuthGuard { uid ->
             setupBottomNavigation(uid,4)
             val viewModel = initViewModel<ProfileViewModel>()

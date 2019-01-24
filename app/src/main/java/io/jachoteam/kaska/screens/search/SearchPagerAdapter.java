@@ -1,20 +1,21 @@
-package io.jachoteam.kaska;
+package io.jachoteam.kaska.screens.search;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-public class PagerAdapter extends FragmentStatePagerAdapter {
+import io.jachoteam.kaska.Tab2Fragment;
+import io.jachoteam.kaska.TabFragment;
+
+public class SearchPagerAdapter extends FragmentStatePagerAdapter {
 
     int mNoOfTabs;
-    String uid;
 
-    public PagerAdapter(FragmentManager fm, int NumberOfTabs, String uid)
+    public SearchPagerAdapter(FragmentManager fm, int NumberOfTabs)
     {
         super(fm);
         this.mNoOfTabs = NumberOfTabs;
-        this.uid = uid;
     }
 
 
@@ -23,19 +24,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        Bundle bundle = new Bundle();
-        bundle.putString("uid",uid);
-
         switch(position)
         {
 
             case 0:
-                TabFragment tab1 = new TabFragment();
-                tab1.setArguments(bundle);
+                SearchFeedFragment tab1 = new SearchFeedFragment();
                 return tab1;
             case 1:
-                Tab2Fragment tab2 = new Tab2Fragment();
-                tab2.setArguments(bundle);
+                SearchFeedFragment tab2 = new SearchFeedFragment();
                 return  tab2;
            /* case 2:
                 Tab3Fragment tab3 = new Tab3Fragment();

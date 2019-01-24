@@ -1,6 +1,5 @@
 package io.jachoteam.kaska.models;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -12,8 +11,9 @@ public class Post {
     double latitude,longitude;
     long timestamp;
     Map<String, Image> images;
+    String[] tag;
 
-    public Post(String address, String audioUrl, String caption, String image, String uid, String username, double latitude, double longitude, long timestamp, Map<String, Image> images) {
+    public Post(String address, String audioUrl, String caption, String image, String uid, String username, double latitude, double longitude, long timestamp, Map<String, Image> images, String[] tag) {
         this.address = address;
         this.audioUrl = audioUrl;
         this.caption = caption;
@@ -24,6 +24,7 @@ public class Post {
         this.longitude = longitude;
         this.timestamp = timestamp;
         this.images = images;
+        this.tag = tag;
     }
 
     public Post(){
@@ -117,5 +118,13 @@ public class Post {
 
     public void setImages(Map<String, Image> images) {
         this.images = images;
+    }
+
+    public String[] getTag() {
+        return tag;
+    }
+
+    public void setTag(String[] tag) {
+        this.tag = tag;
     }
 }

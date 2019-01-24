@@ -65,4 +65,6 @@
     <string name="btn_txt_play_audio">Play</string>
     <string name="btn_txt_pause_audio">Pause</string>
     <string name="btn_txt_stop_audio">Stop</string>
+    <string name="edit_post">Edit post</string>
+    <string name="delete_post">Delete post</string>
 </resources>

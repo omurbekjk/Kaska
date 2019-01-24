@@ -1,21 +1,28 @@
-package io.jachoteam.kaska;
+package io.jachoteam.kaska.screens.search;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
+import io.jachoteam.kaska.R;
 import io.jachoteam.kaska.adapter.ProfileGridAdapter;
+import io.jachoteam.kaska.adapter.RVFeedAdapter;
+import io.jachoteam.kaska.adapter.RVSearchFeedAdapter;
 import io.jachoteam.kaska.dummy.DummyContent.DummyItem;
 import io.jachoteam.kaska.helpers.ElasticSearchApi;
 import io.jachoteam.kaska.helpers.ElasticSearchPostListener;
@@ -27,13 +34,11 @@ import io.jachoteam.kaska.models.Post;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class TabFragment extends Fragment {
+public class SearchFeedFragment extends Fragment {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference postRef;
     // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     int width;
     /**
@@ -42,8 +47,12 @@ public class TabFragment extends Fragment {
      */
     String uid;
     RecyclerView recyclerView;
+    ImageView imageSearch;
+    EditText editSearch;
+    RVSearchFeedAdapter adapter;
 
-    public TabFragment() {
+
+    public SearchFeedFragment() {
 
     }
 
@@ -52,24 +61,52 @@ public class TabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_feed, container, false);
 
-        uid = getArguments().getString("uid");
-        postRef = database.getReference("feed-posts/" + uid);
-        getPost();
-        //updateUserDetails();
+        editSearch = view.findViewById(R.id.search_input);
+        imageSearch = view.findViewById(R.id.search_image);
+
+
         DisplayMetrics metrics = this.getResources().getDisplayMetrics();
         width = metrics.widthPixels;
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
 
-            recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+        Context context = view.getContext();
+        recyclerView = view.findViewById(R.id.list);
 
+        recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
+        adapter = new RVSearchFeedAdapter(getContext());
+        recyclerView.setAdapter(adapter);
 
-        }
+        initSearch();
         return view;
+    }
+
+    private void initSearch() {
+
+        imageSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                getSearchResponse(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
     }
 
 
@@ -102,23 +139,26 @@ public class TabFragment extends Fragment {
 
 
 
-   private void getPost() {
 
-       ElasticSearchPostListener listener = new ElasticSearchPostListener() {
-           @Override
-           public void onRequest(boolean isOk, final ArrayList<Post> posts) {
-               if (isOk) {
-                   getActivity().runOnUiThread(new Runnable() {
-                       @Override
-                       public void run() {
-                           recyclerView.setAdapter(new ProfileGridAdapter(posts,mListener,getContext(),width));
-                       }
-                   });
-               }
-           }
-       };
+    public void getSearchResponse(String text) {
 
-       ElasticSearchApi.getPostByUserId(uid,listener);
+        ElasticSearchPostListener listener = new ElasticSearchPostListener() {
+            @Override
+            public void onRequest(boolean isOk, final ArrayList<Post> posts) {
+                if (isOk) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.updatePosts(posts);
+                        }
+                    });
+                }
+            }
+        };
 
-   }
+        ElasticSearchApi.getPostByTag(text, listener);
+
+    }
+
+
 }

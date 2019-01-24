@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,13 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import io.jachoteam.kaska.data.FeedPostsRepository;
-import io.jachoteam.kaska.data.firebase.FirebaseFeedPostsRepository;
-import io.jachoteam.kaska.data.firebase.FirebaseUsersRepository;
 import io.jachoteam.kaska.dummy.DummyContent;
-import io.jachoteam.kaska.helpers.Shared;
 import io.jachoteam.kaska.models.User;
-import io.jachoteam.kaska.screens.addfriends.AddFriendsViewModel;
 import io.jachoteam.kaska.screens.common.GlideApp;
 
 public class ProfileViewActivity extends AppCompatActivity implements TabFragment.OnListFragmentInteractionListener,
@@ -38,15 +32,13 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
     public String username;
     public TextView followersCountTextView;
     public TextView followingCountTextView;
-    private Button followBtn, unfollowBtn, messageBtn;
     String TAG = "ProfileViewActivity";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference userRef;
     DatabaseReference postRef;
-    FirebaseUsersRepository usersRepository = new FirebaseUsersRepository();
-    FirebaseFeedPostsRepository feedPostRepository = new FirebaseFeedPostsRepository();
     User user;
     boolean userLoaded = false;
+    private Button sendMessageBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,27 +46,24 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
         setContentView(R.layout.activity_profile_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Log.e("Profile","dsdfd");
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");
         username = intent.getStringExtra("username");
         Log.d(TAG, uid + ": " + username);
-
         userRef = database.getReference("users/" + uid);
         postRef = database.getReference("images/" + uid);
+        countPosts();
+        updateUserDetails();
+
+        sendMessage();
+
         followersCountTextView = (TextView) findViewById(R.id.followers_count_text);
         followingCountTextView = (TextView) findViewById(R.id.following_count_text);
-        followBtn = findViewById(R.id.follow_btn);
-        unfollowBtn = findViewById(R.id.unfollow_btn);
-        messageBtn = findViewById(R.id.send_message_btn);
-
-//        messageBtn.setOnClickListener(sendMessage());
 
         followersCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("CLICK", "followers count clicked");
                 Intent intent = new Intent(getApplicationContext(), FollowersListActivity.class);
                 intent.putExtra("uid", uid);
                 startActivity(intent);
@@ -84,22 +73,16 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
         followingCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("CLICK", "Followings count clicked");
                 Intent intent = new Intent(getApplicationContext(), FollowingsListActivity.class);
                 intent.putExtra("uid", uid);
                 startActivity(intent);
             }
         });
 
-        countPosts();
-        updateUserDetails();
-
-        sendMessage();
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_likes_border));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_home));
+//        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
@@ -136,6 +119,15 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
                 startActivity(chatIntent);
             }
         });
+
+        sendMessageBtn = findViewById(R.id.send_message_btn);
+        sendMessageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent chatIntent = new Intent(ProfileViewActivity.this, ChatActivity.class);
+                startActivity(chatIntent);
+            }
+        });
     }
 
     private void updateUserDetails() {
@@ -146,9 +138,6 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
                 userLoaded = true;
                 updateView(user);
                 System.out.println(user);
-
-                displayFollowButton();
-
             }
 
             @Override
@@ -197,27 +186,5 @@ public class ProfileViewActivity extends AppCompatActivity implements TabFragmen
     @Override
     public void onFragmentInteraction(Uri uri) {
         Log.i("INTERFACE_CALLEDD", "URI URI URI");
-    }
-
-    public void displayFollowButton(){
-        if(!user.getFollowers().containsKey(Shared.Uid)){
-//            followBtn.setVisibility(View.VISIBLE);
-            unfollowBtn.setVisibility(View.GONE);
-        }else{
-            followBtn.setVisibility(View.GONE);
-//            unfollowBtn.setVisibility(View.VISIBLE);
-        }
-        followBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // to do
-            }
-        });
-        unfollowBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // to do
-            }
-        });
     }
 }
