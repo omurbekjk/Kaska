@@ -68,9 +68,7 @@
         <!-- android:resource="@xml/file_paths" /> -->
         <!-- </provider> -->
 
-
-        <activity
-            android:name=".screens.postDetails.PostDetailActivity"></activity>
+        <activity android:name=".screens.postDetails.PostDetailActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -82,7 +80,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/picker_provider_paths" />
         </provider>
-        <activity android:name=".FollowingsListActivity"></activity>
+
+        <activity android:name=".FollowingsListActivity" />
+        <activity android:name=".EditPostActivity"></activity>
     </application>
 
 </manifest>

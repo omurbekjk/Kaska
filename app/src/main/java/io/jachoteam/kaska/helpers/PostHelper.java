@@ -3,11 +3,13 @@ package io.jachoteam.kaska.helpers;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.jachoteam.kaska.EditPostActivity;
 import io.jachoteam.kaska.R;
 
 /**
@@ -52,7 +54,7 @@ public class PostHelper {
         dialog.show();
     }
 
-    public static void postPopUpMenuOwn(final Context context, String postId){
+    public static void postPopUpMenuOwn(final Context context, final String postId){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         LayoutInflater inflater = (LayoutInflater)
@@ -64,14 +66,17 @@ public class PostHelper {
         TextView edit_post = (TextView) dialogView.findViewById(R.id.edit_post);
         TextView delete_post = dialogView.findViewById(R.id.delete_post);
 
-
+        System.out.println("POSTID= " + postId);
         final AlertDialog dialog = builder.create();
 
         edit_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Todo: edit post
-                Toast.makeText(context, "Edit", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, EditPostActivity.class);
+                intent.putExtra("postId", postId);
+                context.startActivity(intent);
+                Toast.makeText(context, "Edit post=" + postId, Toast.LENGTH_SHORT).show();
             }
         });
 
