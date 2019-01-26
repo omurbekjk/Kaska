@@ -13,6 +13,7 @@ import java.util.Map;
 
 import io.jachoteam.kaska.models.Image;
 import io.jachoteam.kaska.models.Post;
+import io.jachoteam.kaska.models.UserJava;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -99,6 +100,43 @@ public class ElasticSearchApi {
         });
     }
 
+
+    public static void getUser(String tag, final ElasticSearchPeopleListener listener) {
+
+        OkHttpClient client = new OkHttpClient();
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("params", tag);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(JSON, String.valueOf(jsonParams));
+
+
+        final Request request = new Request.Builder()
+                .url("https://us-central1-kgkaska.cloudfunctions.net/getUserList")
+                .addHeader("Content-Type","application/json")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Fail",call.toString()+"   "+e.getMessage());
+                listener.onRequest(false,null);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String json = response.body().string();
+                Log.e("RESPONSE_Finish",json);
+
+                listener.onRequest(true,fromJsonToPeople(json));
+
+            }
+        });
+    }
+
+
     public static ArrayList<Post> fromJsonToPost(String json){
         ArrayList<Post> posts = new ArrayList<>();
         try {
@@ -156,6 +194,34 @@ public class ElasticSearchApi {
         }
 
         return posts;
+
+    }
+
+
+    public static ArrayList<UserJava> fromJsonToPeople(String json){
+        ArrayList<UserJava> users = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new  JSONObject(json);
+
+            JSONArray message = jsonObject.getJSONArray("message");
+
+            for (int j = 0; j < message.length(); j++) {
+
+                JSONObject _source = message.getJSONObject(j).getJSONObject("_source");
+                UserJava user = new UserJava();
+                user.setId(message.getJSONObject(j).getString("_id"));
+                user.setEmail(_source.getString("email"));
+                user.setName(_source.getString("name"));
+                user.setUsername(_source.getString("username"));
+
+                users.add(user);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return users;
 
     }
 

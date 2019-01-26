@@ -31,7 +31,7 @@ public class SearchPagerAdapter extends FragmentStatePagerAdapter {
                 SearchFeedFragment tab1 = new SearchFeedFragment();
                 return tab1;
             case 1:
-                SearchFeedFragment tab2 = new SearchFeedFragment();
+                SearchPeopleFragment tab2 = new SearchPeopleFragment();
                 return  tab2;
            /* case 2:
                 Tab3Fragment tab3 = new Tab3Fragment();

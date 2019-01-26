@@ -20,11 +20,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 import io.jachoteam.kaska.R;
+import io.jachoteam.kaska.adapter.ProfileGridAdapter;
+import io.jachoteam.kaska.adapter.RVFeedAdapter;
 import io.jachoteam.kaska.adapter.RVSearchFeedAdapter;
+import io.jachoteam.kaska.adapter.RVSearchPeopleAdapter;
 import io.jachoteam.kaska.dummy.DummyContent.DummyItem;
 import io.jachoteam.kaska.helpers.ElasticSearchApi;
+import io.jachoteam.kaska.helpers.ElasticSearchPeopleListener;
 import io.jachoteam.kaska.helpers.ElasticSearchPostListener;
 import io.jachoteam.kaska.models.Post;
+import io.jachoteam.kaska.models.UserJava;
 
 /**
  * A fragment representing a list of Items.
@@ -47,7 +52,7 @@ public class SearchPeopleFragment extends Fragment {
     RecyclerView recyclerView;
     ImageView imageSearch;
     EditText editSearch;
-    RVSearchFeedAdapter adapter;
+    RVSearchPeopleAdapter adapter;
 
 
     public SearchPeopleFragment() {
@@ -65,9 +70,6 @@ public class SearchPeopleFragment extends Fragment {
         imageSearch = view.findViewById(R.id.search_image);
 
 
-        uid = getArguments().getString("uid");
-        postRef = database.getReference("feed-posts/" + uid);
-        //updateUserDetails();
         DisplayMetrics metrics = this.getResources().getDisplayMetrics();
         width = metrics.widthPixels;
         // Set the adapter
@@ -75,8 +77,8 @@ public class SearchPeopleFragment extends Fragment {
         Context context = view.getContext();
         recyclerView = view.findViewById(R.id.list);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
-        adapter = new RVSearchFeedAdapter(getContext());
+        recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
+        adapter = new RVSearchPeopleAdapter(getContext());
         recyclerView.setAdapter(adapter);
 
         initSearch();
@@ -100,7 +102,7 @@ public class SearchPeopleFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                getSearchResponse((String) charSequence);
+                getSearchResponse(charSequence.toString());
             }
 
             @Override
@@ -143,21 +145,22 @@ public class SearchPeopleFragment extends Fragment {
 
     public void getSearchResponse(String text) {
 
-        ElasticSearchPostListener listener = new ElasticSearchPostListener() {
+        ElasticSearchPeopleListener listener = new ElasticSearchPeopleListener() {
             @Override
-            public void onRequest(boolean isOk, final ArrayList<Post> posts) {
+            public void onRequest(boolean isOk, final ArrayList<UserJava> users) {
                 if (isOk) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            adapter.updatePosts(posts);
+                            adapter.updatePosts(users);
                         }
                     });
                 }
             }
         };
 
-        ElasticSearchApi.getPostByTag(text, listener);
+
+        ElasticSearchApi.getUser(text, listener);
 
     }
 
