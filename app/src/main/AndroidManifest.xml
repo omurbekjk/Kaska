@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.jachoteam.kaska">
 
     <uses-feature
@@ -21,6 +22,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAZi_Lt0zqRtgUZ9VQAw8EYjGOo3FWLB6E" />
+
         <activity android:name=".screens.home.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,17 +47,6 @@
         <activity android:name=".screens.profilesettings.ProfileSettingsActivity" />
         <activity android:name=".screens.addfriends.AddFriendsActivity" />
         <activity android:name=".screens.comments.CommentsActivity" />
-
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="io.jachoteam.kaska.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".ProfileViewActivity" />
         <activity
@@ -61,7 +55,34 @@
             android:theme="@style/BlueTheme" />
         <activity android:name=".FollowersListActivity" />
         <activity android:name=".CreatePostActivity" />
-        <activity android:name=".RecordAudioActivity"></activity>
+        <activity android:name=".RecordAudioActivity" />
+
+        <!-- <provider -->
+        <!-- android:name="android.support.v4.content.FileProvider" -->
+        <!-- android:authorities="io.jachoteam.kaska.fileprovider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true" -->
+        <!-- tools:replace="android:resource"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/file_paths" /> -->
+        <!-- </provider> -->
+
+
+        <activity
+            android:name=".screens.postDetails.PostDetailActivity"></activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.com.vansuita.pickimage.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/picker_provider_paths" />
+        </provider>
+        <activity android:name=".FollowingsListActivity"></activity>
     </application>
 
 </manifest>

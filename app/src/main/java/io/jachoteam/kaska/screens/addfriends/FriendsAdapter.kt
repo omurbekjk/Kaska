@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.jachoteam.kaska.R
+import io.jachoteam.kaska.adapter.ProfileOpener
 import io.jachoteam.kaska.models.User
 import io.jachoteam.kaska.screens.common.SimpleCallback
 import io.jachoteam.kaska.screens.common.loadUserPhoto
@@ -36,6 +37,9 @@ class FriendsAdapter(private val listener: Listener)
             val user = mUsers[position]
             photo_image.loadUserPhoto(user.photo)
             username_text.text = user.username
+
+            username_text.setOnClickListener(ProfileOpener(context, user.uid, user.username))
+
             name_text.text = user.name
             follow_btn.setOnClickListener { listener.follow(user.uid) }
             unfollow_btn.setOnClickListener { listener.unfollow(user.uid) }

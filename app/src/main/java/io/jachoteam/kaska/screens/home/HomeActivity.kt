@@ -1,82 +1,76 @@
 package io.jachoteam.kaska.screens.home
 
-import android.annotation.SuppressLint
-import android.arch.lifecycle.Observer
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
-import io.jachoteam.kaska.ProfileViewActivity
+import android.support.v7.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import io.jachoteam.kaska.R
-import io.jachoteam.kaska.screens.comments.CommentsActivity
+import io.jachoteam.kaska.adapter.RVFeedAdapter
+import io.jachoteam.kaska.common.ValueEventListenerAdapter
+import io.jachoteam.kaska.helpers.Shared
+import io.jachoteam.kaska.models.Post
 import io.jachoteam.kaska.screens.common.BaseActivity
 import io.jachoteam.kaska.screens.common.setupAuthGuard
 import io.jachoteam.kaska.screens.common.setupBottomNavigation
-import kotlinx.android.synthetic.main.activity_home.*
+import io.jachoteam.kaska.screens.postDetails.DefaultPostDetailsImpl
+import io.jachoteam.kaska.screens.postDetails.PostDetailsService
+import java.util.ArrayList
 
-class HomeActivity : BaseActivity(), FeedAdapter.Listener {
-    private lateinit var mAdapter: FeedAdapter
-    private lateinit var mViewModel: HomeViewModel
+class HomeActivity : BaseActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: RVFeedAdapter
+    private lateinit var defaultPostDetailsService: PostDetailsService
+
+    var database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    lateinit var postRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        Log.d(TAG, "onCreate")
 
-        mAdapter = FeedAdapter(this,this@HomeActivity)
-        feed_recycler.adapter = mAdapter
-        feed_recycler.layoutManager = LinearLayoutManager(this)
-
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            Shared.Uid = FirebaseAuth.getInstance().currentUser!!.uid
+        }
         setupAuthGuard { uid ->
             setupBottomNavigation(uid, 0)
-            mViewModel = initViewModel()
-            mViewModel.init(uid)
-            mViewModel.feedPosts.observe(this, Observer {
-                it?.let {
-                    mAdapter.updatePosts(it)
-                }
-            })
-            mViewModel.goToCommentsScreen.observe(this, Observer {
-                it?.let { postId ->
-                    CommentsActivity.start(this, postId)
-                }
-            })
+            postRef = database.getReference("feed-posts/$uid")
+            defaultPostDetailsService = DefaultPostDetailsImpl(this)
+            recyclerView = findViewById(R.id.feed_recycler)
+            recyclerView.layoutManager = LinearLayoutManager(this)
+
+            recyclerView.setHasFixedSize(true)
+
+            adapter = RVFeedAdapter(this)
+            recyclerView.adapter = adapter
+            updateUserDetails()
         }
+
+
     }
 
-    override fun toggleLike(postId: String) {
-        Log.d(TAG, "toggleLike: $postId")
-        mViewModel.toggleLike(postId)
-    }
+    private fun updateUserDetails() {
+        val feedPosts:MutableList<Post> = mutableListOf()
+        postRef.addValueEventListener(
+                ValueEventListenerAdapter(
+                        handler = { dataSnapshot ->
+                            for (postSnapShot: DataSnapshot in dataSnapshot.children) {
+                                var post = postSnapShot.getValue(Post::class.java)
+                                post!!.id = postSnapShot.key
 
-    override fun openProfile(username: String, uid: String) {
-        Log.d(TAG, "VIEW PROFILE: $username, $uid")
-        val profileIntent = Intent(this, ProfileViewActivity::class.java)
-        profileIntent.putExtra("uid", uid);
-        profileIntent.putExtra("username", username);
-        startActivity(profileIntent)
-    }
+                                feedPosts.add(post)
+                            }
 
-    override fun loadLikes(postId: String, position: Int) {
-        if (mViewModel.getLikes(postId) == null) {
-            mViewModel.loadLikes(postId).observe(this, Observer {
-                it?.let { postLikes ->
-                    mAdapter.updatePostLikes(position, postLikes)
-                }
-            })
-        }
-    }
+                            runOnUiThread {
 
-    override fun openComments(postId: String) {
-        mViewModel.openComments(postId)
-    }
-
-    companion object {
-        const val TAG = "HomeActivity"
-
-        // feed slider
-        @SuppressLint("StaticFieldLeak")
-        lateinit var mPager: ViewPager
+                                adapter.updatePosts(
+//                                        feedPosts.sortedWith(compareBy({ it.timestamp }))
+                                ArrayList(feedPosts).sortedWith(compareByDescending<Post>{ it.timestamp })
+                                )
+                            }
+                        }))
     }
 }

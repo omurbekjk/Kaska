@@ -1,4 +1,5 @@
 <resources>
+    <string name="google_maps_api_key">AIzaSyAZi_Lt0zqRtgUZ9VQAw8EYjGOo3FWLB6E</string>
     <string name="app_name">Kaska</string>
     <string name="create_account">Don\'t have an account? <b>Sign up.</b></string>
     <string name="reset_password">Reset Password?</string>
@@ -15,6 +16,7 @@
     <string name="phone">Phone</string>
     <string name="password">Password</string>
     <string name="log_in">Log In</string>
+    <string name="go_back">back</string>
     <string name="posts">posts</string>
     <string name="followers">followers</string>
     <string name="following">following</string>
@@ -58,5 +60,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hint_enter_a_message">Type a message...</string>
+    <string name="message">Message...</string>
     <string name="chat_label">Chat</string>
+    <string name="btn_txt_play_audio">Play</string>
+    <string name="btn_txt_pause_audio">Pause</string>
+    <string name="btn_txt_stop_audio">Stop</string>
+    <string name="edit_post">Edit post</string>
+    <string name="delete_post">Delete post</string>
 </resources>

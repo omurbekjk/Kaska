@@ -3,10 +3,14 @@ package io.jachoteam.kaska.screens.search
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.os.Handler
+import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
+import io.jachoteam.kaska.PagerAdapter
 import io.jachoteam.kaska.R
 import io.jachoteam.kaska.screens.common.BaseActivity
 import io.jachoteam.kaska.screens.common.ImagesAdapter
@@ -38,6 +42,32 @@ class SearchActivity : BaseActivity(), TextWatcher {
             search_input.addTextChangedListener(this)
             mViewModel.setSearchText("")
         }
+
+        val tabLayout = findViewById<View>(R.id.tablayout) as TabLayout
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_likes_border))
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_home))
+//        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
+        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
+
+        val viewPager = findViewById<View>(R.id.pager) as ViewPager
+        val adapter = SearchPagerAdapter(supportFragmentManager, tabLayout.tabCount)
+        viewPager.adapter = adapter
+        viewPager.setOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
+
+        tabLayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewPager.currentItem = tab.position
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+
+            }
+        })
+
     }
 
     override fun afterTextChanged(s: Editable?) {
